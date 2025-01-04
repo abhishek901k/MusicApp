@@ -1,0 +1,6 @@
+CREATE TABLE song (
+    id BIGSERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    artist VARCHAR(255) NOT NULL,
+    genre VARCHAR(255)
+);
