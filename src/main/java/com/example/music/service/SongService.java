@@ -1,4 +1,7 @@
-package com.example.music;
+package com.example.music.service;
+
+import com.example.music.repository.SongRepository;
+import com.example.music.domain.Song;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

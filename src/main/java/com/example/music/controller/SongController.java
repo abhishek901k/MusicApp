@@ -1,5 +1,7 @@
-package com.example.music;
+package com.example.music.controller;
 
+import com.example.music.service.SongService;
+import com.example.music.domain.Song;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
