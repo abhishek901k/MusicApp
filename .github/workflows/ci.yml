@@ -60,6 +60,10 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ secrets.AWS_REGION }}
 
+      - name: Debug AWS credentials
+        run: |
+          aws sts get-caller-identity
+
 
       - name: Log in to Amazon ECR
         run: |
