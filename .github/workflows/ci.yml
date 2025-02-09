@@ -29,9 +29,11 @@ jobs:
       - name: Run tests
         run: ./gradlew test
 
-  build:
+  build-and-push:
+    name: Build and Push to ECR
     runs-on: ubuntu-latest
     needs: test
+    environment: aws
     if: github.event_name == 'push'
     steps:
       - name: Checkout code
@@ -44,17 +46,6 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: ${{ runner.os }}-gradle-
 
-      - name: Build Docker image
-        run: docker build -t my-spring-boot-music-app .
-
-  push-to-ecr:
-    runs-on: ubuntu-latest
-    needs: build
-    environment: aws
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
       - name: Set up AWS CLI using OIDC
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -62,12 +53,15 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Log in to Amazon ECR
+        id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Tag Docker image
+      - name: Build, Tag, and Push Image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: MusicApp
+          IMAGE_TAG: latest
         run: |
-          docker tag my-spring-boot-music-app:latest ${{ secrets.ECR_REPOSITORY_NAME }}:latest
-
-      - name: Push Docker image to ECR
-        run: |
-          docker push ${{ secrets.ECR_REPOSITORY_NAME }}:latest
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
